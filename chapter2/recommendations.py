@@ -32,8 +32,7 @@ def sim_distance(prefs,person1,person2):
   if len(si)==0: return 0
 
   # Add up the squares of all the differences
-  sum_of_squares=sum([pow(prefs[person1][item]-prefs[person2][item],2) 
-                      for item in prefs[person1] if item in prefs[person2]])
+  sum_of_squares=sum([pow(prefs[person1][item]-prefs[person2][item],2) for item in si])
 
   return 1/(1+sum_of_squares)
 
@@ -67,6 +66,33 @@ def sim_pearson(prefs,p1,p2):
   if den==0: return 0
 
   r=num/den
+
+  return r
+
+# Returns the Pearson correlation coefficient for p1 and p2
+def sim_pearson2(prefs,p1,p2):
+  # Get the list of mutually rated items
+  si={}
+  for item in prefs[p1]: 
+    if item in prefs[p2]: si[item]=1
+
+  # Sum calculations
+  n = len(si)
+  
+  # if there are no ratings in common, return 0
+  if n == 0: return 0
+
+  def x(i): return prefs[p1][i]
+  def y(i): return prefs[p2][i]
+
+  mean_x = sum([x(i) for i in si]) / n
+  mean_y = sum([y(i) for i in si]) / n
+ 
+  cov_xy  = sum([(x(i) - mean_x) * (y(i) - mean_y) for i in si])
+  stdev_x = sqrt(sum([pow(x(i) - mean_x, 2) for i in si]))
+  stdev_y = sqrt(sum([pow(y(i) - mean_y, 2) for i in si]))
+
+  r = cov_xy / (stdev_x * stdev_y)
 
   return r
 

@@ -1,4 +1,3 @@
-from PIL import Image,ImageDraw
 
 def readfile(filename):
   lines=[line for line in file(filename)]
@@ -102,6 +101,30 @@ def printclust(clust,labels=None,n=0):
   if clust.left!=None: printclust(clust.left,labels=labels,n=n+1)
   if clust.right!=None: printclust(clust.right,labels=labels,n=n+1)
 
+
+def printclust2(clust,labels,n=0):
+  if n == 0:
+    print "<html><body>"
+  if clust.id<0:
+    # negative id means that this is branch
+    print '<ul>'
+  else:
+    # positive id means that this is an endpoint
+    link = labels[clust.id]
+    text = link.split('/')[-2]    
+    print """<li><a href="{}">{}</a>""".format(link, text)
+
+  # now print the right and left branches
+  if clust.left!=None: printclust2(clust.left,labels=labels,n=n+1)
+  if clust.right!=None: printclust2(clust.right,labels=labels,n=n+1)
+
+  if clust.id<0:
+    # negative id means that this is branch
+    print '</ul>'
+  if n == 0:
+    print "</body></html>"
+
+
 def getheight(clust):
   # Is this an endpoint? Then the height is just 1
   if clust.left==None and clust.right==None: return 1
@@ -120,6 +143,7 @@ def getdepth(clust):
 
 
 def drawdendrogram(clust,labels,jpeg='clusters.jpg'):
+  from PIL import Image,ImageDraw
   # height and width
   h=getheight(clust)*20
   w=1200
@@ -139,6 +163,7 @@ def drawdendrogram(clust,labels,jpeg='clusters.jpg'):
   img.save(jpeg,'JPEG')
 
 def drawnode(draw,clust,x,y,scaling,labels):
+  from PIL import Image,ImageDraw
   if clust.id<0:
     h1=getheight(clust.left)*20
     h2=getheight(clust.right)*20
@@ -271,6 +296,7 @@ def scaledown(data,distance=pearson,rate=0.01):
   return loc
 
 def draw2d(data,labels,jpeg='mds2d.jpg'):
+  from PIL import Image,ImageDraw
   img=Image.new('RGB',(2000,2000),(255,255,255))
   draw=ImageDraw.Draw(img)
   for i in range(len(data)):
